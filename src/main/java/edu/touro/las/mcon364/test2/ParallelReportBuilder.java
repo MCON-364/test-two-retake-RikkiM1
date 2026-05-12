@@ -2,6 +2,9 @@ package edu.touro.las.mcon364.test2;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -48,7 +51,8 @@ public class ParallelReportBuilder {
 
 
     // TODO 1: declare and initialize private thread-safe progress tracking state called numberOfBatchesProcessed
-    
+    private final AtomicInteger numberOfBatchesProcessed = new AtomicInteger(0);
+
     /*
      * TODO 2 — generateReport(List<List<Transaction>> batches, int workers)
      *
@@ -76,8 +80,10 @@ public class ParallelReportBuilder {
             throws InterruptedException, ExecutionException, IllegalArgumentException {
 
         // TODO 2A: validate inputs where appropriate
-
+if(workers ==0 || batches == null || batches.isEmpty())
+    throw new IllegalArgumentException("Cannot have 0 or null workers");
         // TODO 2B: create the concurrency structure needed for the pattern you chose
+        ExecutorService pool = Executors.newFixedThreadPool(workers);
 
 
         // TODO 2C: submit or assign one unit of work per batch
@@ -96,7 +102,9 @@ public class ParallelReportBuilder {
         // you don't have to use streams here. In this case for loop is acceptable
 
         // TODO 2E: shut down any concurrency resources you created
-
+        pool.shutdown();
+        if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+        }
         // TODO 2F: return the completed ReportSummary
         return null; //placeholder
     }
